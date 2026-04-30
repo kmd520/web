@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>🇹🇭 Thai Keys</title>
+<style>
+  :root {
+    --bg: #1e1e1e;
+    --surface: #2a2a2a;
+    --border: #383838;
+    --text-muted: #666;
+    --text-dim: #888;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: var(--bg);
+    min-height: 100dvh;
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    overscroll-behavior: none;
+  }
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 12px 10px 24px;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 2px 12px;
+  }
+  .logo {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ccc;
+    letter-spacing: .5px;
+  }
+  .logo span { opacity: .5; font-weight: 400; font-size: 12px; margin-left: 6px; }
+  .gender-toggle {
+    display: flex;
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 3px;
+    gap: 2px;
+    border: 1px solid var(--border);
+  }
+  .gb {
+    padding: 5px 14px;
+    border-radius: 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .gb.active { background: #484848; color: #eee; }
+
+  /* ── Category tabs ── */
+  .cat-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-bottom: 10px;
+  }
+  .cat-scroll::-webkit-scrollbar { display: none; }
+  .cat-row {
+    display: flex;
+    gap: 6px;
+    padding: 2px 1px 6px;
+    width: max-content;
+  }
+  .cat-btn {
+    padding: 6px 13px;
+    border-radius: 20px;
+    border: 1.5px solid transparent;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .15s;
+    background: var(--surface);
+    color: var(--text-muted);
+    border-color: var(--border);
+  }
+  .cat-btn.active {
+    color: #fff;
+  }
+
+  /* ── Count badge ── */
+  .count-bar {
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 0 2px 8px;
+    letter-spacing: .3px;
+  }
+
+  /* ── Grid ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+  .key-wrap {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    overflow: hidden;
+  }
+  .key {
+    border-radius: var(--radius);
+    padding: 0 5px;
+    cursor: pointer;
+    text-align: center;
+    user-select: none;
+    border: 1.5px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    width: 100%;
+    height: 100%;
+    transition: filter .1s, transform .08s;
+    -webkit-user-select: none;
+  }
+  .key:active, .key.pressed {
+    filter: brightness(1.35);
+    transform: scale(.93);
+  }
+  .key-zh {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.1;
+    word-break: keep-all;
+  }
+  .key-rom {
+    font-size: 10px;
+    opacity: .7;
+    line-height: 1.3;
+    word-break: break-all;
+  }
+
+  /* ── Status ── */
+  .status {
+    text-align: center;
+    padding: 10px 8px 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+    min-height: 28px;
+    letter-spacing: .3px;
+  }
+  .status .th-text {
+    color: #aaa;
+    font-size: 14px;
+    display: block;
+  }
+
+  /* ── Category colors ── */
+  /* Q 問候禮儀 – steel blue */
+  .cat-Q { background:#1e2e3e; border-color:#2e5070; }
+  .cat-Q .key-zh { color:#8ec8f0; }
+  .cat-Q .key-rom { color:#5a9bc0; }
+  .btn-Q { border-color:#2e5070 !important; }
+  .btn-Q.active { background:#2e5070 !important; color:#8ec8f0 !important; }
+
+  /* B 基本對話 – violet */
+  .cat-B { background:#261e3a; border-color:#4a3070; }
+  .cat-B .key-zh { color:#c4a0f0; }
+  .cat-B .key-rom { color:#8a60c0; }
+  .btn-B { border-color:#4a3070 !important; }
+  .btn-B.active { background:#4a3070 !important; color:#c4a0f0 !important; }
+
+  /* R 餐飲點餐 – amber */
+  .cat-R { background:#332415; border-color:#6a4418; }
+  .cat-R .key-zh { color:#f0c070; }
+  .cat-R .key-rom { color:#c09040; }
+  .btn-R { border-color:#6a4418 !important; }
+  .btn-R.active { background:#6a4418 !important; color:#f0c070 !important; }
+
+  /* S 購物殺價 – green */
+  .cat-S { background:#1a2e1a; border-color:#2e5e2e; }
+  .cat-S .key-zh { color:#90d890; }
+  .cat-S .key-rom { color:#50a850; }
+  .btn-S { border-color:#2e5e2e !important; }
+  .btn-S.active { background:#2e5e2e !important; color:#90d890 !important; }
+
+  /* T 交通移動 – teal */
+  .cat-T { background:#162a2a; border-color:#1e5454; }
+  .cat-T .key-zh { color:#70d8d0; }
+  .cat-T .key-rom { color:#3aa8a0; }
+  .btn-T { border-color:#1e5454 !important; }
+  .btn-T.active { background:#1e5454 !important; color:#70d8d0 !important; }
+
+  /* E 情緒感受 – pink */
+  .cat-E { background:#2e1a28; border-color:#6a2a58; }
+  .cat-E .key-zh { color:#f090c8; }
+  .cat-E .key-rom { color:#c05090; }
+  .btn-E { border-color:#6a2a58 !important; }
+  .btn-E.active { background:#6a2a58 !important; color:#f090c8 !important; }
+
+  /* ALL tab */
+  .btn-ALL.active { background: #484848 !important; color: #eee !important; border-color: #666 !important; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">🇹🇭 Thai Keys <span>泰語速查</span></div>
+    <div class="gender-toggle">
+      <button class="gb active" id="bM" onclick="setG('m')">♂ 男</button>
+      <button class="gb" id="bF" onclick="setG('f')">♀ 女</button>
+    </div>
+  </div>
+
+  <div class="cat-scroll">
+    <div class="cat-row" id="catRow"></div>
+  </div>
+
+  <div class="count-bar" id="countBar"></div>
+  <div class="grid" id="grid"></div>
+  <div class="status" id="status">點按任意按鍵播放泰語發音</div>
+</div>
+
+<script>
+const CATS = {
+  ALL: { name:"全部",      col:"#aaa" },
+  Q:   { name:"問候禮儀",  col:"#8ec8f0" },
+  B:   { name:"基本對話",  col:"#c4a0f0" },
+  R:   { name:"餐飲點餐",  col:"#f0c070" },
+  S:   { name:"購物殺價",  col:"#90d890" },
+  T:   { name:"交通移動",  col:"#70d8d0" },
+  E:   { name:"情緒感受",  col:"#f090c8" },
+};
+
+const PHRASES = [
+  {zh:"你好",       rom:"沙哇滴",        th:"สวัสดี",             m:"สวัสดีครับ",             f:"สวัสดีค่ะ",             cat:"Q"},
+  {zh:"謝謝",       rom:"空坤",           th:"ขอบคุณ",             m:"ขอบคุณครับ",             f:"ขอบคุณค่ะ",             cat:"Q"},
+  {zh:"對不起",     rom:"口托",           th:"ขอโทษ",              m:"ขอโทษครับ",              f:"ขอโทษค่ะ",              cat:"Q"},
+  {zh:"沒關係",     rom:"邁本來",         th:"ไม่เป็นไร",           m:"ไม่เป็นไรครับ",           f:"ไม่เป็นไรค่ะ",           cat:"Q"},
+  {zh:"早安",       rom:"阿魯沙哇滴",     th:"อรุณสวัสดิ์",         m:"อรุณสวัสดิ์ครับ",         f:"อรุณสวัสดิ์ค่ะ",         cat:"Q"},
+  {zh:"晚安",       rom:"拉特里沙哇滴",   th:"ราตรีสวัสดิ์",        m:"ราตรีสวัสดิ์ครับ",        f:"ราตรีสวัสดิ์ค่ะ",        cat:"Q"},
+  {zh:"再見",       rom:"拉貢",           th:"ลาก่อน",             m:"ลาก่อนครับ",             f:"ลาก่อนค่ะ",             cat:"Q"},
+  {zh:"歡迎",       rom:"殷滴功拉蒲",     th:"ยินดีต้อนรับ",        m:"ยินดีต้อนรับครับ",        f:"ยินดีต้อนรับค่ะ",        cat:"Q"},
+  {zh:"初次見面",   rom:"殷滴提路加恩",   th:"ยินดีที่รู้จัก",       m:"ยินดีที่รู้จักครับ",       f:"ยินดีที่รู้จักค่ะ",       cat:"Q"},
+  {zh:"你好嗎",     rom:"沙拜滴邁",       th:"สบายดีไหม",          m:"คุณสบายดีไหมครับ",        f:"คุณสบายดีไหมค่ะ",        cat:"Q"},
+  {zh:"我很好",     rom:"沙拜滴",         th:"สบายดี",             m:"สบายดีครับ",             f:"สบายดีค่ะ",             cat:"Q"},
+  {zh:"請問",       rom:"口塔",           th:"ขอถาม",              m:"ขอถามครับ",              f:"ขอถามค่ะ",              cat:"Q"},
+  {zh:"好的",       rom:"岱",             th:"ได้",                m:"ได้ครับ",                f:"ได้ค่ะ",                cat:"B"},
+  {zh:"不是",       rom:"邁蔡",           th:"ไม่ใช่",             m:"ไม่ใช่ครับ",             f:"ไม่ใช่ค่ะ",             cat:"B"},
+  {zh:"我不懂",     rom:"邁考賈",         th:"ไม่เข้าใจ",           m:"ไม่เข้าใจครับ",           f:"ไม่เข้าใจค่ะ",           cat:"B"},
+  {zh:"再說一次",   rom:"普達伊科捨",     th:"พูดอีกครั้ง",         m:"พูดอีกครั้งครับ",         f:"พูดอีกครั้งค่ะ",         cat:"B"},
+  {zh:"慢一點",     rom:"曹曹",           th:"ช้าๆ",               m:"ช้าๆครับ",               f:"ช้าๆค่ะ",               cat:"B"},
+  {zh:"在哪裡",     rom:"幽替那",         th:"อยู่ที่ไหน",          m:"อยู่ที่ไหนครับ",          f:"อยู่ที่ไหนค่ะ",          cat:"B"},
+  {zh:"幾點",       rom:"奇摩龍",         th:"กี่โมง",             m:"กี่โมงครับ",             f:"กี่โมงค่ะ",             cat:"B"},
+  {zh:"今天",       rom:"旺尼",           th:"วันนี้",              m:"วันนี้ครับ",              f:"วันนี้ค่ะ",              cat:"B"},
+  {zh:"明天",       rom:"普魯尼",         th:"พรุ่งนี้",            m:"พรุ่งนี้ครับ",            f:"พรุ่งนี้ค่ะ",            cat:"B"},
+  {zh:"幫幫我",     rom:"曲阿依",         th:"ช่วยด้วย",            m:"ช่วยด้วยครับ",            f:"ช่วยด้วยค่ะ",            cat:"B"},
+  {zh:"沒問題",     rom:"邁密班哈",       th:"ไม่มีปัญหา",          m:"ไม่มีปัญหาครับ",          f:"ไม่มีปัญหาค่ะ",          cat:"B"},
+  {zh:"我叫…",      rom:"坡姆蔡",         th:"ผมชื่อ",             m:"ผมชื่อครับ",             f:"ฉันชื่อค่ะ",            cat:"B"},
+  {zh:"好吃",       rom:"阿荷伊",         th:"อร่อย",              m:"อร่อยครับ",              f:"อร่อยค่ะ",              cat:"R"},
+  {zh:"水",         rom:"南",             th:"น้ำ",                m:"น้ำครับ",                f:"น้ำค่ะ",                cat:"R"},
+  {zh:"吃飯",       rom:"金考",           th:"กินข้าว",            m:"กินข้าวครับ",            f:"กินข้าวค่ะ",            cat:"R"},
+  {zh:"辣",         rom:"佩",             th:"เผ็ด",               m:"เผ็ดครับ",               f:"เผ็ดค่ะ",               cat:"R"},
+  {zh:"不辣",       rom:"邁佩",           th:"ไม่เผ็ด",            m:"ไม่เผ็ดครับ",            f:"ไม่เผ็ดค่ะ",            cat:"R"},
+  {zh:"買單",       rom:"切賓",           th:"เช็คบิล",            m:"เช็คบิลครับ",            f:"เช็คบิลค่ะ",            cat:"R"},
+  {zh:"菜單",       rom:"梅努",           th:"เมนู",               m:"เมนูครับ",               f:"เมนูค่ะ",               cat:"R"},
+  {zh:"啤酒",       rom:"比亞",           th:"เบียร์",             m:"เบียร์ครับ",             f:"เบียร์ค่ะ",             cat:"R"},
+  {zh:"加冰",       rom:"沙伊南",         th:"ใส่น้ำแข็ง",          m:"ใส่น้ำแข็งครับ",          f:"ใส่น้ำแข็งค่ะ",          cat:"R"},
+  {zh:"不加糖",     rom:"邁沙伊南丹",     th:"ไม่ใส่น้ำตาล",        m:"ไม่ใส่น้ำตาลครับ",        f:"ไม่ใส่น้ำตาลค่ะ",        cat:"R"},
+  {zh:"外帶",       rom:"告奔派",         th:"กลับบ้าน",           m:"กลับบ้านครับ",           f:"กลับบ้านค่ะ",           cat:"R"},
+  {zh:"素食",       rom:"金接",           th:"กินเจ",              m:"กินเจครับ",              f:"กินเจค่ะ",              cat:"R"},
+  {zh:"多少錢",     rom:"拉卡拖萊",       th:"ราคาเท่าไร",          m:"ราคาเท่าไรครับ",          f:"ราคาเท่าไรค่ะ",          cat:"S"},
+  {zh:"太貴了",     rom:"攀個伊",         th:"แพงไป",              m:"แพงไปครับ",              f:"แพงไปค่ะ",              cat:"S"},
+  {zh:"便宜點",     rom:"斗哇羅兒",       th:"ถูกหน่อย",           m:"ถูกหน่อยครับ",           f:"ถูกหน่อยค่ะ",           cat:"S"},
+  {zh:"打折",       rom:"洛拉卡",         th:"ลดราคา",             m:"ลดราคาครับ",             f:"ลดราคาค่ะ",             cat:"S"},
+  {zh:"可以打折嗎", rom:"洛岱邁",         th:"ลดได้ไหม",           m:"ลดได้ไหมครับ",           f:"ลดได้ไหมค่ะ",           cat:"S"},
+  {zh:"好看",       rom:"蘇阿依",         th:"สวย",                m:"สวยครับ",                f:"สวยค่ะ",                cat:"S"},
+  {zh:"有嗎",       rom:"密邁密",         th:"มีไหม",              m:"มีไหมครับ",              f:"มีไหมค่ะ",              cat:"S"},
+  {zh:"大一點",     rom:"跳奇那尼",       th:"ใหญ่กว่านี้",         m:"ใหญ่กว่านี้ครับ",         f:"ใหญ่กว่านี้ค่ะ",         cat:"S"},
+  {zh:"包起來",     rom:"好奔派",         th:"ห่อด้วย",            m:"ห่อด้วยครับ",            f:"ห่อด้วยค่ะ",            cat:"S"},
+  {zh:"刷卡",       rom:"路巴達",         th:"รูดบัตร",            m:"รูดบัตรครับ",            f:"รูดบัตรค่ะ",            cat:"S"},
+  {zh:"現金",       rom:"棍沙",           th:"เงินสด",             m:"เงินสดครับ",             f:"เงินสดค่ะ",             cat:"S"},
+  {zh:"找零錢",     rom:"透恩",           th:"ทอนเงิน",            m:"ทอนเงินครับ",            f:"ทอนเงินค่ะ",            cat:"S"},
+  {zh:"廁所",       rom:"向南",           th:"ห้องน้ำ",            m:"ห้องน้ำครับ",            f:"ห้องน้ำค่ะ",            cat:"T"},
+  {zh:"計程車",     rom:"洛坦西",         th:"รถแท็กซี่",           m:"รถแท็กซี่ครับ",           f:"รถแท็กซี่ค่ะ",           cat:"T"},
+  {zh:"機場",       rom:"沙南賓",         th:"สนามบิน",            m:"สนามบินครับ",            f:"สนามบินค่ะ",            cat:"T"},
+  {zh:"飯店",       rom:"龍軍",           th:"โรงแรม",             m:"โรงแรมครับ",             f:"โรงแรมค่ะ",             cat:"T"},
+  {zh:"我迷路",     rom:"龍郎",           th:"หลงทาง",             m:"หลงทางครับ",             f:"หลงทางค่ะ",             cat:"T"},
+  {zh:"左邊",       rom:"歪沙伊",         th:"ทางซ้าย",            m:"ทางซ้ายครับ",            f:"ทางซ้ายค่ะ",            cat:"T"},
+  {zh:"右邊",       rom:"歪恰瓦",         th:"ทางขวา",             m:"ทางขวาครับ",             f:"ทางขวาค่ะ",             cat:"T"},
+  {zh:"直走",       rom:"準派",           th:"ตรงไป",              m:"ตรงไปครับ",              f:"ตรงไปค่ะ",              cat:"T"},
+  {zh:"停這裡",     rom:"優梯尼",         th:"จอดที่นี่",           m:"จอดที่นี่ครับ",           f:"จอดที่นี่ค่ะ",           cat:"T"},
+  {zh:"醫院",       rom:"龍帕雅班",       th:"โรงพยาบาล",          m:"โรงพยาบาลครับ",          f:"โรงพยาบาลค่ะ",          cat:"T"},
+  {zh:"警察",       rom:"坦路阿",         th:"ตำรวจ",              m:"ตำรวจครับ",              f:"ตำรวจค่ะ",              cat:"T"},
+  {zh:"快一點",     rom:"雷歐",           th:"เร็วๆ",              m:"เร็วๆครับ",              f:"เร็วๆค่ะ",              cat:"T"},
+  {zh:"我愛你",     rom:"坡姆拉克坤",     th:"รักคุณ",             m:"ผมรักคุณครับ",            f:"หนูรักคุณค่ะ",           cat:"E"},
+  {zh:"想你了",     rom:"奇特坤",         th:"คิดถึง",             m:"คิดถึงครับ",             f:"คิดถึงค่ะ",             cat:"E"},
+  {zh:"加油",       rom:"蘇蘇",           th:"สู้ๆ",               m:"สู้ๆครับ",               f:"สู้ๆค่ะ",               cat:"E"},
+  {zh:"好棒",       rom:"個棒",           th:"เก่งมาก",            m:"เก่งมากครับ",            f:"เก่งมากค่ะ",            cat:"E"},
+  {zh:"好開心",     rom:"滴介",           th:"ดีใจ",               m:"ดีใจครับ",               f:"ดีใจค่ะ",               cat:"E"},
+  {zh:"好累",       rom:"努阿",           th:"เหนื่อย",            m:"เหนื่อยครับ",            f:"เหนื่อยค่ะ",            cat:"E"},
+  {zh:"好熱",       rom:"洛那瓦",         th:"ร้อนมาก",            m:"ร้อนมากครับ",            f:"ร้อนมากค่ะ",            cat:"E"},
+  {zh:"好冷",       rom:"納瓦",           th:"หนาวมาก",            m:"หนาวมากครับ",            f:"หนาวมากค่ะ",            cat:"E"},
+  {zh:"好害怕",     rom:"格武",           th:"กลัว",               m:"กลัวครับ",               f:"กลัวค่ะ",               cat:"E"},
+  {zh:"沒事",       rom:"邁本來",         th:"ไม่เป็นไร",           m:"ไม่เป็นไรครับ",           f:"ไม่เป็นไรค่ะ",           cat:"E"},
+  {zh:"好久不見",   rom:"邁岱坡賈坤南",   th:"ไม่ได้เจอกันนาน",     m:"ไม่ได้เจอกันนานครับ",     f:"ไม่ได้เจอกันนานค่ะ",     cat:"E"},
+  {zh:"陳亮慈",     rom:"奇特坤",         th:"คิดถึง",             m:"คิดถึงครับ",             f:"คิดถึงค่ะ",             cat:"E"},
+];
+
+let gender = 'm';
+let curCat = 'ALL';
+const synth = window.speechSynthesis;
+
+function setG(g) {
+  gender = g;
+  document.getElementById('bM').className = 'gb' + (g==='m'?' active':'');
+  document.getElementById('bF').className = 'gb' + (g==='f'?' active':'');
+}
+
+function speak(text, th, rom, keyEl) {
+  synth.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'th-TH';
+  utt.rate = 0.85;
+  utt.pitch = gender === 'f' ? 1.25 : 0.88;
+  const vs = synth.getVoices().filter(v => v.lang.startsWith('th'));
+  if (vs.length) {
+    utt.voice = gender === 'f'
+      ? (vs.find(v => /female|woman/i.test(v.name)) || vs[vs.length-1])
+      : (vs.find(v => /male|man/i.test(v.name)) || vs[0]);
+  }
+  keyEl.classList.add('pressed');
+  utt.onend = () => keyEl.classList.remove('pressed');
+  utt.onerror = () => keyEl.classList.remove('pressed');
+  synth.speak(utt);
+  const s = document.getElementById('status');
+  s.innerHTML = `<span class="th-text">${th}</span>${rom}`;
+}
+
+function render() {
+  const phrases = PHRASES.filter(p => curCat === 'ALL' || p.cat === curCat);
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  phrases.forEach(p => {
+    const wrap = document.createElement('div');
+    wrap.className = 'key-wrap';
+    const key = document.createElement('div');
+    key.className = `key cat-${p.cat}`;
+    key.innerHTML = `<span class="key-zh">${p.zh}</span><span class="key-rom">${p.rom}</span>`;
+    key.addEventListener('click', () => speak(gender==='m'?p.m:p.f, p.th, p.rom, key));
+    wrap.appendChild(key);
+    grid.appendChild(wrap);
+  });
+  document.getElementById('countBar').textContent =
+    CATS[curCat].name + '　' + phrases.length + ' 個詞彙';
+}
+
+function renderTabs() {
+  const row = document.getElementById('catRow');
+  row.innerHTML = '';
+  Object.entries(CATS).forEach(([k, v]) => {
+    const btn = document.createElement('button');
+    btn.className = `cat-btn btn-${k}` + (curCat===k?' active':'');
+    btn.textContent = v.name;
+    btn.onclick = () => { curCat = k; renderTabs(); render(); };
+    row.appendChild(btn);
+  });
+}
+
+renderTabs();
+render();
+setTimeout(() => synth.getVoices(), 200);
+if (speechSynthesis.onvoiceschanged !== undefined)
+  speechSynthesis.onvoiceschanged = () => {};
+</script>
+</body>
+</html>
